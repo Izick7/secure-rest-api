@@ -40,10 +40,33 @@ const register = async (req, res) => {
             });
         }
 
-        return res.status(200).json({
-            message: "Validation successful"
-        });
+        const userExists = users.find(user => user.email === normalizedEmail);
 
+        if (userExists) {
+            return res.status(409).json({
+                message: "Email already registered"
+            });
+        }
+
+        const passwordHash = bcrypt.hash(password, 10)
+        const newUser = {
+            id: users.length + 1,
+            name: name.trim(),
+            email: normalizedEmail,
+            passwordHash,
+            role: normalizedRole
+        };
+        users.push(newUser);
+
+        return res.status(201).json({
+            message: "User registered successfully",
+            user: {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role
+            }
+        });
 
     } catch (error) {
         res.status(500).json({
