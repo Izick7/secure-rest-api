@@ -1,6 +1,7 @@
 const express = require("express");
 const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
+const authLimiter = require("./middleware/rateLimitMiddleware");
 
 const app = express();
 
@@ -12,7 +13,7 @@ app.get("/", (req, res) => {
     });
 });
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/products", productRoutes);
 
 module.exports = app;
